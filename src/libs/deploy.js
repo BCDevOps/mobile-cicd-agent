@@ -36,7 +36,7 @@ const client = new minio.Client({
   secretKey: config.get('minio:secretKey'),
   region: config.get('minio:region'),
 });
-/* eslint-disable global-require */
+
 /**
  * Get the signed appliaction package
  *
