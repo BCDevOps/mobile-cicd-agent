@@ -56,7 +56,7 @@
   },
   "scripts": {
     "start": "node build/src",
-    "dev": "NODE_ENV=development nodemon src --exec babel-node --inspect=9228",
+    "dev": "NODE_ENV=development nodemon src/server.js --exec babel-node --inspect=9228",
     "build": "NODE_ENV=production gulp",
     "build:doc": "bootprint openapi doc/api.yaml public/doc/api",
     "test": "NODE_ENV=test jest _test_",
