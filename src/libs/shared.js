@@ -28,7 +28,7 @@ const gs = Object.getOwnPropertySymbols(global);
 
 if (!(gs.indexOf(key) > -1)) {
   global[key] = new minio.Client({
-    endPoint: config.get('minio:endPoint'),
+    endPoint: config.get('minio:host'),
     port: config.get('minio:port'),
     secure: config.get('minio:secure'),
     accessKey: config.get('minio:accessKey'),
