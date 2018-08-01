@@ -20,72 +20,15 @@
 
 'use strict';
 
+// mocking of the nodejs-common-utils library:
 const bucket = jest.genMockFromModule('@bcgov/nodejs-common-utils');
 
 function getObject(client, bucket, name) {
   return new Promise((resolve, reject) => {
     resolve('OK');
   });
-
-  
-  const now = new Date();
-  if (file === 'expiredFile') {
-    now.setDate(now.getDate() + 1000);
-  }
-
-  return cb(undefined, {
-    size: 1000,
-    etag: 'abc123',
-    metaData: {},
-    lastModified: now,
-  });
 }
 
-function presignedGetObject(bucket, name, expiryInSeconds, cb) {
-  cb(undefined, 'http://localhost/foo/abc123');
-}
+bucket.getObject = getObject;
 
-minio.Client.prototype.statObject = statObject;
-minio.Client.prototype.presignedGetObject = presignedGetObject;
-
-module.exports = minio;
-
-
-
-// --------------------
-// question:
-// 1. why mock minio not the nodejs-common-utils library??
-// 2. can we export mocks from the library?
-
-
-/**
- * Fetch an object from an existing bucket
- *
- * @param {String} bucket The name of the bucket
- * @param {String} name The name of the object to retrieve
- * @returns {Promise} Returns a promise with the error or Buffer
- */
-export const getObject = (client, bucket, name) => new Promise((resolve, reject) => {
-  let size = 0;
-  const data = [];
-
-  client.getObject(bucket, name, (error, stream) => {
-    if (error) {
-      reject(error);
-      return;
-    }
-
-    stream.on('data', (chunk) => {
-      size += chunk.length;
-      data.push(chunk);
-    });
-
-    stream.on('end', () => {
-      resolve(Buffer.concat(data, size));
-    });
-
-    stream.on('error', (serror) => {
-      reject(serror);
-    });
-  });
-});
+module.exports = bucket;
