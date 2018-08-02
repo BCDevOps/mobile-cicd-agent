@@ -80,11 +80,9 @@ describe('Test job routes', () => {
       .post('/v1/job/deploy')
       .set('content-type', 'application/json')
       .send({
-        job: {
-          id: 1,
-          platform: 'android',
-          deployPlatform: 'public',
-        },
+        id: 1,
+        platform: 'android',
+        deploymentPlatform: 'public',
       });
     expect(response.statusCode).toBe(200); // OK
   });
