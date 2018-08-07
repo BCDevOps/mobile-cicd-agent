@@ -21,6 +21,16 @@
 import { default as request } from 'supertest'; // eslint-disable-line
 import app from '../src';
 
+// import * as utils from '@bcgov/nodejs-common-utils';
+// temperay way of mocking a function used internally by a router:
+// mock the function only: https://jestjs.io/docs/en/mock-functions
+// utils.getJwtCertificate = url => {
+//   return new Promise((resolve, reject) => {
+//     resolve('OK');
+//   });
+// };
+// jest.mock('@bcgov/nodejs-common-utils');
+
 jest.mock('../src/libs/job');
 
 describe('Test monitoring routes', () => {

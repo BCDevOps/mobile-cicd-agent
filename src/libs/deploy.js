@@ -169,16 +169,27 @@ export const deployGoogle = async (signedApp, workspace = '/tmp/') => {
 };
 
 /**
- * Apple Store Deployment
+ * App Store Deployment
  *
- * @param {String} signedApp The name of the signed app
+ * @param {String} signedApp The name of the signed app, accepts .ipa format
  * @param {string} [workspace='/tmp/'] The workspace to use
  * @returns The status of the deployment
  */
 // eslint-disable-next-line import/prefer-default-export
 export const deployAppleStore = async (signedApp, workspace = '/tmp/') => {
 
-  // TODO
+  // altool --validate-app -f file -u username [-p password] [--output-format xml]
+
+  // Get app:
+  const signedAppPath = await fetchFileFromStorage(signedApp, workspace);
+  // Turn data stream into a package-archive file for deployment:
+  const signedAPP = require('fs').readFileSync(signedAppPath);
+
+  // const appId = ???
+
+  const iosUser = await exec(`security find-generic-password -w -s deployKey -a ${appId}`);
+  const iosPassword = await exec(`security find-generic-password -w -s deployKey -a ${appId}`);
+
 
 };
 
