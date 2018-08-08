@@ -176,7 +176,7 @@ export const deployGoogle = async (signedApp, workspace = '/tmp/') => {
  * @returns The status of the deployment
  */
 // eslint-disable-next-line import/prefer-default-export
-export const deployAppleStore = async (signedApp, workspace = '/tmp/') => {
+export const deployAppStore = async (signedApp, workspace = '/tmp/') => {
 
   // altool --validate-app -f file -u username [-p password] [--output-format xml]
 
@@ -185,11 +185,11 @@ export const deployAppleStore = async (signedApp, workspace = '/tmp/') => {
   // Turn data stream into a package-archive file for deployment:
   const signedAPP = require('fs').readFileSync(signedAppPath);
 
+  // share the same functions from signing, seperate to another file -> next
   // const appId = ???
 
   const iosUser = await exec(`security find-generic-password -w -s deployKey -a ${appId}`);
   const iosPassword = await exec(`security find-generic-password -w -s deployKey -a ${appId}`);
-
 
 };
 
