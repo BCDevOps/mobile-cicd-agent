@@ -33,7 +33,7 @@ import path from 'path';
 import config from '../config';
 import shared from './shared';
 import { signipaarchive, signxcarchive, signapkarchive } from './sign';
-import { deployGoogle } from './deploy';
+import { deployGoogle, deployAppStore, deployAirWatch } from './deploy';
 
 const bucket = config.get('minio:bucket');
 
@@ -178,7 +178,8 @@ export const handleDeploymentJob = async (job, clean = true) => {
         switch (job.platform) {
           case 'ios':
           {
-            throw new Error('Temploray not supported');
+            deployedAppPath = await deployAppStore(job.originalFileName);
+            break;
           }
           case 'android':
           {
