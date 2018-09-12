@@ -177,19 +177,31 @@ export const deployGoogle = async (signedApp, workspace = '/tmp/') => {
  */
 // eslint-disable-next-line import/prefer-default-export
 export const deployAppStore = async (signedApp, workspace = '/tmp/') => {
-
-  // altool --validate-app -f file -u username [-p password] [--output-format xml]
-
   // Get app:
   const signedAppPath = await fetchFileFromStorage(signedApp, workspace);
-  // Turn data stream into a package-archive file for deployment:
   const signedAPP = require('fs').readFileSync(signedAppPath);
 
   // share the same functions from signing, seperate to another file -> next
   // const appId = ???
 
+  // https://help.apple.com/itc/apploader/#/apdATD1E53-D1E1A1303-D1E53A1126
+
   const iosUser = await exec(`security find-generic-password -w -s deployKey -a ${appId}`);
   const iosPassword = await exec(`security find-generic-password -w -s deployKey -a ${appId}`);
+
+  // Use altool to validate the app:
+  const validateRes = await exec(`
+  altool --validate-app \
+  -f ${signedAPP} \
+  -u ${iosUser} \
+  -p ${iosPassword}`);
+
+  // Use altool to upload the app to Apple Store Connect:
+  const uploadRes = await exec(`
+  altool --upload-app \
+  -f ${signedAPP} \
+  -u ${iosUser} \
+  -p ${iosPassword}`);
 
 };
 
