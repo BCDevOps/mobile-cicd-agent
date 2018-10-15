@@ -20,22 +20,36 @@
 
 'use strict';
 
-import { handleJob, handleDeploymentJob } from '../src/libs/job';
+import { fetchKeychainValue, isEmpty } from '../src/libs/utils';
 
-function handleJobMock(job, clean) {
-  return new Promise((resolve, reject) => {
-    resolve('OK');
+jest.mock('child_process');
+
+describe('Test isEmpty()', () => {
+  test('isEmpty handles a not null object', async () => {
+    const testObject = { a: 1, b: 2 };
+
+    expect(isEmpty(testObject)).toBe(false);
   });
-}
 
-function handleDeploymentJobMock(job, clean) {
-  return new Promise((resolve, reject) => {
-    resolve('OK');
+  test('isValid handles null object', async () => {
+    const testObject = null;
+    const testObject2 = {};
+
+    expect(isEmpty(testObject)).toBe(true);
+    expect(isEmpty(testObject2)).toBe(true);
   });
-}
+});
 
-handleJob = handleJobMock;
-handleDeploymentJob = handleDeploymentJobMock;
+describe('Test fetchKeychainValue()', () => {
+  test('fetchKeychainValue handles multiple keychain fetch', async () => {
+    const testInput = ['a', 'b', 'c'];
+    const expectedOutput = JSON.stringify({
+      a: 'standard output',
+      b: 'standard output',
+      c: 'standard output',
+    });
+    const actualOutput = JSON.stringify(await fetchKeychainValue(testInput, 'testAccount'));
 
-module.exports = handleJob;
-module.exports = handleDeploymentJob;
+    expect(actualOutput).toBe(expectedOutput);
+  });
+});

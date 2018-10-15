@@ -15,26 +15,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Created by Jason Leach on 2018-01-10.
+// Created by Jason Leach on 2018-07-20.
 //
 
-'use strict';
+import { default as request } from 'supertest'; // eslint-disable-line
+import app from '../../src';
 
-import { logger, started } from '@bcgov/nodejs-common-utils';
-import config from './config';
-import app from './index';
-
-const env = config.get('environment');
-const port = config.get('port');
-
-app.listen(port, '0.0.0.0', err => {
-  if (err) {
-    return logger.error(`There was a problem starting the server, ${err.message}`);
-  }
-  if (env !== 'production') {
-    return started(port);
-  }
-  return logger.info(`Production server running on port: ${port}`);
+describe('Test monitoring routes', () => {
+  test('The readiness probe should respond with 200 ', async () => {
+    await request(app)
+      .get('/ehlo')
+      .expect(200);
+  });
 });
-
-module.exports = app;
