@@ -170,7 +170,7 @@ export const deployGoogle = async (signedApp, workspace = '/tmp/') => {
 /**
  * App Store Deployment
  *
- * @param {String} signedApp The name of the signed app, accepts .ipa format
+ * @param {String} signedApp The name of the signed app, ONLY accepts .ipa / .pkg format
  * @param {string} [workspace='/tmp/'] The workspace to use
  * @returns The status of the deployment
  */
@@ -180,28 +180,53 @@ export const deployAppStore = async (signedApp, workspace = '/tmp/') => {
   const signedAppPath = await fetchFileFromStorage(signedApp, workspace);
   const signedAPP = require('fs').readFileSync(signedAppPath);
 
-  // share the same functions from signing, seperate to another file -> next
-  // const appId = ???
+  // Get altool access:
+  const iosUser = await exec('security find-generic-password -w -s appleAccount -a altool');
+  const iosPassword = await exec('security find-generic-password -w -s appleKey -a altool');
 
-  // https://help.apple.com/itc/apploader/#/apdATD1E53-D1E1A1303-D1E53A1126
+  try {
+    // Step 1. Use altool to validate the app:
+    // TODO: (sh) only accepting iOS apps, could provide more option for tvOS, OS X and macOS apps
+    const validateRes = await exec(`
+    xcrun altool --validate-app \
+    -t ios \
+    -f ${signedAPP} \
+    -u ${iosUser} \
+    -p ${iosPassword}`);
 
-  const iosUser = await exec(`security find-generic-password -w -s deployKey -a ${appId}`);
-  const iosPassword = await exec(`security find-generic-password -w -s deployKey -a ${appId}`);
+    if (!validateRes.stderr.includes('No errors')) {
+      console.log('fail');
+      throw new Error(validateRes.stderr.split("***").map(item => item.trim())[1]);
+    }
 
-  // Use altool to validate the app:
-  const validateRes = await exec(`
-  altool --validate-app \
-  -f ${signedAPP} \
-  -u ${iosUser} \
-  -p ${iosPassword}`);
+    // Step 2. Use altool to upload the app to Apple Store Connect:
+    const uploadRes = await exec(`
+    altool --upload-app \
+    -f ${signedAPP} \
+    -u ${iosUser} \
+    -p ${iosPassword} \
+    --output-format xml`);
 
-  // Use altool to upload the app to Apple Store Connect:
-  const uploadRes = await exec(`
-  altool --upload-app \
-  -f ${signedAPP} \
-  -u ${iosUser} \
-  -p ${iosPassword}`);
+    if (!validateRes.stderr.includes('No errors')) {
+      console.log('fail');
+      throw new Error(validateRes.stderr.split("***").map(item => item.trim())[1]);
+    }
 
+    return signedAppPath;
+  } catch (err) {
+    const message = 'Unable to deploy to Apple Store';
+    let errMsg = '';
+
+    parser.parseString(err.stdout, function (err, result) {
+      errMsg = result.plist.dict[0].array[0].dict[0].string;
+      console.log(err);
+    });
+
+
+    logger.error(`${message}, err = ${errMsg}`);
+  }
+
+  return Promise.reject();
 };
 
 /**
