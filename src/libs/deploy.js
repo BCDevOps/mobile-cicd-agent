@@ -23,6 +23,7 @@ import cp from 'child_process';
 import util from 'util';
 import path from 'path';
 import shortid from 'shortid';
+import xml2js from 'xml2js';
 import config from '../config';
 import shared from './shared';
 import { fetchKeychainValue } from './utils';
@@ -209,7 +210,8 @@ export const deployAppStore = async (signedApp, workspace = '/tmp/') => {
     const message = 'Unable to deploy to Apple Store';
     let errMsg = '';
 
-    // Use xml parser to read error message from altool:
+    // Use xml parser to read error message from altool, at specific path:
+    const parser = new xml2js.Parser();
     parser.parseString(err.stdout, function (err, result) {
       errMsg = result.plist.dict[0].array[0].dict[0].string[0];
     });
