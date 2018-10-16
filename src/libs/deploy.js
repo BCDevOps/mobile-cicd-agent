@@ -181,47 +181,38 @@ export const deployAppStore = async (signedApp, workspace = '/tmp/') => {
   const signedAPP = require('fs').readFileSync(signedAppPath);
 
   // Get altool access:
-  const iosUser = await exec('security find-generic-password -w -s appleAccount -a altool');
-  const iosPassword = await exec('security find-generic-password -w -s appleKey -a altool');
+  const iosKeys = ['appleAccount', 'appleKey'];
+  const iosKeyPairs = await fetchKeychainValue(iosKeys, 'altool');
 
   try {
     // Step 1. Use altool to validate the app:
     // TODO: (sh) only accepting iOS apps, could provide more option for tvOS, OS X and macOS apps
-    const validateRes = await exec(`
+    await exec(`
     xcrun altool --validate-app \
     -t ios \
     -f ${signedAPP} \
-    -u ${iosUser} \
-    -p ${iosPassword}`);
-
-    if (!validateRes.stderr.includes('No errors')) {
-      console.log('fail');
-      throw new Error(validateRes.stderr.split("***").map(item => item.trim())[1]);
-    }
-
-    // Step 2. Use altool to upload the app to Apple Store Connect:
-    const uploadRes = await exec(`
-    altool --upload-app \
-    -f ${signedAPP} \
-    -u ${iosUser} \
-    -p ${iosPassword} \
+    -u ${iosKeyPairs[iosKeys[0]]} \
+    -p ${iosKeyPairs[iosKeys[1]]} \
     --output-format xml`);
 
-    if (!validateRes.stderr.includes('No errors')) {
-      console.log('fail');
-      throw new Error(validateRes.stderr.split("***").map(item => item.trim())[1]);
-    }
+    // Step 2. Use altool to upload the app to Apple Store Connect:
+    await exec(`
+    xcrun altool --upload-app \
+    -t ios \
+    -f ${signedAPP} \
+    -u ${iosKeyPairs[iosKeys[0]]} \
+    -p ${iosKeyPairs[iosKeys[1]]} \
+    --output-format xml`);
 
     return signedAppPath;
   } catch (err) {
     const message = 'Unable to deploy to Apple Store';
     let errMsg = '';
 
+    // Use xml parser to read error message from altool:
     parser.parseString(err.stdout, function (err, result) {
-      errMsg = result.plist.dict[0].array[0].dict[0].string;
-      console.log(err);
+      errMsg = result.plist.dict[0].array[0].dict[0].string[0];
     });
-
 
     logger.error(`${message}, err = ${errMsg}`);
   }
