@@ -1,5 +1,5 @@
 //
-// SecureImage
+// Code Sign
 //
 // Copyright © 2018 Province of British Columbia
 //
@@ -15,10 +15,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Created by Jason Leach on 2018-01-10.
+// Created by Jason Leach on 2018-05-06.
 //
-
-/* eslint-env es6 */
 
 'use strict';
 

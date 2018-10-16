@@ -68,8 +68,8 @@ paths:
       responses:
         204:
           description: The archive was deployed
-        401:
-          description: You have not supplied a valid google client authentication
+        400:
+          description: Cannot find the app or platform to deploy
         500:
           description: Internal Error
 components:
