@@ -37,6 +37,7 @@ import { isEmpty } from '../../libs/utils';
 const router = new Router();
 const bucket = config.get('minio:bucket');
 
+// TODO: remove the handlers from the route to libs
 /**
  * Cleanup artifacts left over from the signing process
  *
