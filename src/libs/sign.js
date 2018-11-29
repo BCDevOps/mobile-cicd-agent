@@ -250,9 +250,13 @@ export const parseXcodebuildError = message => {
  */
 export const parseApksignerbuildError = message => {
   const key = ':';
-  const aLine = message.split(`${key}`)[1].split('\n')[0];
-
-  return aLine.substr(key.length).trim();
+  try {
+    const aLine = message.split(`${key}`)[1].split('\n')[0];
+    return aLine.substr(key.length).trim();
+  } catch (err) {
+    const hint = 'APK error is not read properly. Update error message paser';
+    return `${hint}, err = ${err.message}`;
+  }
 };
 
 /**
