@@ -161,7 +161,7 @@ const getApkBundleID = async apkPackage => {
     cut -d "'" -f2
     `);
     // Get rid of the linebreak at the end:
-    logger.info(apkBundle.stdout);
+    logger.info(`Package bundle id ${apkBundle.stdout}`);
     return apkBundle.stdout.replace(/(\r\n\t|\n|\r\t)/gm, '');
   } catch (error) {
     throw new Error(`Unable to find package name! ${error}`);
