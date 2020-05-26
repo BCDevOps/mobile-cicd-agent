@@ -14,7 +14,7 @@ sleep 5
 
 if [ $? -eq 0 ]; then
   echo "Checking for updates"
-  if [ $(git status -uno | grep "Your branch is up to date") ] ||
+  if [ $(git status -uno | grep -q "Your branch is up to date") ] ||
   [ ! -d build ]; then
     echo "Fetching updates and rebuilding"
     git pull && \
