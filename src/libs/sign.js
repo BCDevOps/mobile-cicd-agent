@@ -219,7 +219,6 @@ const getKeyStore = async apkBundleID => {
   // 1. Use security to check for android keystore in keychain:
   try {
     await exec(`security find-generic-password -w -a ${apkBundleID}`);
-    // await exec(`security find-generic-password -w -a ${apkBundleID} ${LOCAL_PATHS.KEYCHAIN_NAME}`);
   } catch (err) {
     logger.info(`No keystore for this app...start to create new for ${apkBundleID}:`);
 
