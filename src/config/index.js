@@ -44,6 +44,9 @@ nconf.overrides({
   environment: env,
   host: process.env.HOST || '127.0.0.1',
   port: process.env.PORT || defaultPort,
+  tools: {
+    aapt: process.env.AAPT_PATH || 'aapt',
+  },
   minio: {
     host: process.env.MINIO_HOST,
     accessKey: process.env.MINIO_ACCESS_KEY,
