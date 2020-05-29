@@ -409,7 +409,7 @@ export const signapkarchive = async (archiveFilePath, workspace = '/tmp/') => {
 
     // Sign the apk:
     const response = await exec(`
-      apksigner sign \
+      ${config.get('tools:apksigner')} sign \
       -v \
       --ks ${keystorePairs[keystoreKeys[2]]} \
       --ks-key-alias ${keystorePairs[keystoreKeys[0]]} \
