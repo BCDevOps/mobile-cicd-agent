@@ -155,13 +155,15 @@ const packageForDelivery = async (apath, items) => {
 const getApkBundleID = async apkPackage => {
   try {
     // Use Android Asset Packaging Tool to get package bundle ID:
-    const apkBundle = await exec(`
-    aapt dump badging ${apkPackage} | \
-    grep package: | \
-    cut -d "'" -f2
-    `);
-    // Get rid of the linebreak at the end:
+    const apkBundle = await exec(
+      `${config.get('tools:aapt')} dump badging ${apkPackage} | grep "package" | cut -d "'" -f2`
+    );
     logger.info(`Package bundle id ${apkBundle.stdout}`);
+    if (!apkBundle.stdout) {
+      throw Error('No bundle ID found!');
+    }
+    logger.info(`Package bundle ID: ${apkBundle.stdout}`);
+    // Get rid of the linebreak at the end:
     return apkBundle.stdout.replace(/(\r\n\t|\n|\r\t)/gm, '');
   } catch (error) {
     throw new Error(`Unable to find package name! ${error}`);
